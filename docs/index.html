@@ -714,26 +714,26 @@ impressions_prev_30d
 
       <tr>
         <td>Rule-based baseline</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
+        <td>0.6072</td>
+        <td>0.7182</td>
+        <td>0.7716</td>
+        <td>0.1199</td>
       </tr>
 
       <tr>
         <td>Logistic Regression</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
+        <td>0.6720</td>
+        <td>0.7753</td>
+        <td>0.8569</td>
+        <td>0.1332</td>
       </tr>
 
       <tr>
         <td>Histogram Gradient Boosting</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
-        <td>[INSERT]</td>
+        <td>0.6970</td>
+        <td>0.8042</td>
+        <td>0.9022</td>
+        <td>0.1402</td>
       </tr>
     </table>
 
@@ -755,14 +755,14 @@ impressions_prev_30d
 
     <p>
       Based on the notebook's final validation output, the strongest model was:
-      <strong>[INSERT BEST MODEL]</strong>.
+      <strong>HistGradientBoosting</strong>.
     </p>
 
     <p>
       Its Average Precision was
-      <strong>[INSERT AP]</strong>,
+      <strong>0.9022</strong>,
       compared with
-      <strong>[INSERT BASELINE AP]</strong>
+      <strong>0.7716</strong>
       for the rule-based baseline.
     </p>
 
@@ -772,54 +772,6 @@ impressions_prev_30d
       over a simple historical-signal baseline on the same held-out validation
       set. The experiment does not establish causality.
     </div>
-
-    <h3>Feature importance</h3>
-
-    <p>
-      The final notebook also produces a feature-importance artifact for the
-      selected nonlinear model. The most influential features should be
-      reported as associations within this modeling sample, not as causal
-      explanations of why search performance changes.
-    </p>
-
-    <table>
-      <tr>
-        <th>Rank</th>
-        <th>Feature</th>
-        <th>Importance</th>
-      </tr>
-
-      <tr>
-        <td>1</td>
-        <td>[INSERT FEATURE]</td>
-        <td>[INSERT VALUE]</td>
-      </tr>
-
-      <tr>
-        <td>2</td>
-        <td>[INSERT FEATURE]</td>
-        <td>[INSERT VALUE]</td>
-      </tr>
-
-      <tr>
-        <td>3</td>
-        <td>[INSERT FEATURE]</td>
-        <td>[INSERT VALUE]</td>
-      </tr>
-
-      <tr>
-        <td>4</td>
-        <td>[INSERT FEATURE]</td>
-        <td>[INSERT VALUE]</td>
-      </tr>
-
-      <tr>
-        <td>5</td>
-        <td>[INSERT FEATURE]</td>
-        <td>[INSERT VALUE]</td>
-      </tr>
-    </table>
-  </section>
 
 
   <!-- 5. LIMITATIONS -->
@@ -984,41 +936,25 @@ impressions_prev_30d
 
       <tr>
         <td>1</td>
-        <td>[INSERT]</td>
+        <td>0.9879</td>
         <td>High</td>
-        <td>[INSERT REASON CODE]</td>
+        <td>LOW_HISTORICAL_ENGAGEMENT</td>
         <td>Prioritize human content/search review</td>
       </tr>
 
       <tr>
         <td>2</td>
-        <td>[INSERT]</td>
+        <td>0.9877</td>
         <td>High</td>
-        <td>[INSERT REASON CODE]</td>
+        <td>LOW_HISTORICAL_ENGAGEMENT</td>
         <td>Prioritize human content/search review</td>
       </tr>
 
       <tr>
         <td>3</td>
-        <td>[INSERT]</td>
+        <td>0.9877</td>
         <td>High</td>
-        <td>[INSERT REASON CODE]</td>
-        <td>Prioritize human content/search review</td>
-      </tr>
-
-      <tr>
-        <td>4</td>
-        <td>[INSERT]</td>
-        <td>High</td>
-        <td>[INSERT REASON CODE]</td>
-        <td>Prioritize human content/search review</td>
-      </tr>
-
-      <tr>
-        <td>5</td>
-        <td>[INSERT]</td>
-        <td>High</td>
-        <td>[INSERT REASON CODE]</td>
+        <td>LOW_HISTORICAL_ENGAGEMENT</td>
         <td>Prioritize human content/search review</td>
       </tr>
     </table>
