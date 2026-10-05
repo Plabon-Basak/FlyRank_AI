@@ -1,0 +1,1302 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Decline and Recovery Opportunity Ranking | FlyRank ML Capstone</title>
+
+  <meta
+    name="description"
+    content="A machine learning decision-support study for ranking content pages for decline investigation using historical search-performance signals."
+  >
+
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --text: #17202a;
+      --muted: #5f6b76;
+      --border: #dfe4e8;
+      --accent: #1f5eff;
+      --accent-dark: #1747c7;
+      --success: #176b45;
+      --warning: #8a5a00;
+      --code-bg: #f1f3f5;
+      --max-width: 980px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+      line-height: 1.7;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      width: min(100% - 40px, var(--max-width));
+      margin: 0 auto;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 72px 0 56px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      margin: 0 0 22px;
+      max-width: 900px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.15rem;
+      max-width: 820px;
+      margin: 0;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 12px 0;
+      white-space: nowrap;
+    }
+
+    .nav-inner a {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .nav-inner a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    main {
+      padding: 48px 0 80px;
+    }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 34px;
+      margin-bottom: 28px;
+    }
+
+    h2 {
+      font-size: 1.65rem;
+      line-height: 1.25;
+      margin: 0 0 20px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin: 0 0 16px;
+    }
+
+    ul,
+    ol {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .abstract {
+      border-left: 4px solid var(--accent);
+      padding: 20px 22px;
+      background: #f4f7ff;
+      margin-top: 28px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .question {
+      background: #f8f9fb;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+
+    .decision-box {
+      background: #f8fbf9;
+      border: 1px solid #cfe5d9;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      background: #fff;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+
+    .metric .value {
+      font-size: 1.35rem;
+      font-weight: 750;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.94rem;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f5f6f8;
+      font-weight: 700;
+    }
+
+    code {
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: #171b21;
+      color: #f2f4f7;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .note {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      background: #fafafa;
+      margin: 20px 0;
+    }
+
+    .warning {
+      border-left: 4px solid #c18400;
+      background: #fffaf0;
+      padding: 16px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+
+    .success {
+      border-left: 4px solid var(--success);
+      background: #f4fbf7;
+      padding: 16px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+
+    .chart-placeholder {
+      border: 1px dashed #aeb7c1;
+      border-radius: 10px;
+      padding: 32px;
+      text-align: center;
+      color: var(--muted);
+      margin: 20px 0;
+      background: #fafbfc;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #edf2ff;
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin: 3px 4px 3px 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 36px 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 800px) {
+      section {
+        padding: 24px;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        width: min(100% - 24px, var(--max-width));
+      }
+
+      header {
+        padding: 48px 0 40px;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 20px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <div class="eyebrow">FlyRank Machine Learning Internship · Week 8 Capstone</div>
+
+    <h1>
+      Decline and Recovery Opportunity Ranking
+    </h1>
+
+    <p class="subtitle">
+      Can historical search-performance signals identify pages that are likely
+      to experience a meaningful decline or recovery opportunity in a future
+      period, allowing content reviewers to prioritize pages for investigation?
+    </p>
+
+    <div class="abstract">
+      <strong>Abstract.</strong>
+      This study investigates whether historical search-performance signals can
+      support the prioritization of content pages for decline investigation.
+      A task-focused FlyRank example dataset was transformed into a binary
+      severe-decline target using a 50% or greater decrease in impressions
+      between two exposed 30-day windows. A rule-based ranking baseline was
+      compared with logistic regression and histogram-based gradient boosting
+      using a fixed stratified validation split and ranking-oriented metrics.
+      The strongest model achieved
+      <strong>[INSERT VALIDATION RESULT]</strong>
+      compared with the rule-based baseline of
+      <strong>[INSERT BASELINE RESULT]</strong>
+      on the primary ranking metric. The resulting score is therefore framed
+      as directional decision support for human content and search review,
+      rather than as a causal prediction of search-engine behavior or future
+      traffic.
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#introduction">Introduction</a>
+    <a href="#data">Data</a>
+    <a href="#methodology">Methodology</a>
+    <a href="#results">Results</a>
+    <a href="#limitations">Limitations</a>
+    <a href="#recommendations">Recommendations</a>
+    <a href="#reproducibility">Reproducibility</a>
+    <a href="#acknowledgments">Data Credit</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- 1. INTRODUCTION -->
+
+  <section id="introduction">
+    <h2>1. Introduction / Problem Statement</h2>
+
+    <p>
+      Content teams often have more pages available for review than they can
+      investigate manually. A useful machine learning system does not need to
+      automatically change content to create value; it can instead help a
+      reviewer decide where limited investigation time should be spent first.
+    </p>
+
+    <p>
+      This capstone focuses on that decision-support problem. The objective is
+      to use historical search-performance signals to produce a ranked list of
+      pages that deserve additional human investigation because their observed
+      performance profile is associated with a severe decline in the exposed
+      future window.
+    </p>
+
+    <div class="question">
+      Research question:
+      <br><br>
+      Can historical search-performance signals identify pages that are likely
+      to experience a meaningful decline or recovery opportunity in a future
+      period, allowing content reviewers to prioritize pages for investigation?
+    </div>
+
+    <div class="decision-box">
+      <strong>Decision supported:</strong>
+      Which pages should a content or SEO reviewer investigate first?
+      <br><br>
+      <strong>Intended output:</strong>
+      an opportunity score, priority level, reason codes, and a recommended
+      review action.
+    </div>
+
+    <h3>Scope</h3>
+
+    <p>
+      The analysis is intentionally limited to the supplied
+      <strong>decline/recovery example lane</strong>. It should not be
+      interpreted as evidence that the model generalizes to every page,
+      website, search engine, industry, or future period.
+    </p>
+  </section>
+
+
+  <!-- 2. DATA -->
+
+  <section id="data">
+    <h2>2. Data</h2>
+
+    <p>
+      The analysis uses the FlyRank internship lane dataset configured for
+      decline and recovery analysis. The dataset is accessed through the
+      internship data environment and is used here only for the purpose of
+      building a public-safe research artifact.
+    </p>
+
+    <div class="metric-grid">
+
+      <div class="metric">
+        <div class="label">Rows</div>
+        <div class="value">56,253</div>
+      </div>
+
+      <div class="metric">
+        <div class="label">Columns</div>
+        <div class="value">43</div>
+      </div>
+
+      <div class="metric">
+        <div class="label">Positive target</div>
+        <div class="value">36,192</div>
+      </div>
+
+      <div class="metric">
+        <div class="label">Negative target</div>
+        <div class="value">20,061</div>
+      </div>
+
+    </div>
+
+    <h3>Dataset configuration</h3>
+
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Dataset lane</td>
+        <td><code>decline_recovery</code></td>
+      </tr>
+      <tr>
+        <td>Rows</td>
+        <td>56,253</td>
+      </tr>
+      <tr>
+        <td>Available fields</td>
+        <td>43</td>
+      </tr>
+      <tr>
+        <td>Previous observation window</td>
+        <td>Previous exposed 30-day window</td>
+      </tr>
+      <tr>
+        <td>Forward observation window</td>
+        <td>Last exposed 30-day window</td>
+      </tr>
+      <tr>
+        <td>Target definition</td>
+        <td>At least 50% decrease in impressions</td>
+      </tr>
+      <tr>
+        <td>Validation split</td>
+        <td>80% train / 20% validation, stratified, random seed 42</td>
+      </tr>
+    </table>
+
+    <h3>Target construction</h3>
+
+    <p>
+      The exposed impression windows were used to calculate percentage change:
+    </p>
+
+    <pre><code>impression_change_pct =
+(
+    impressions_last_30d - impressions_prev_30d
+)
+/
+impressions_prev_30d
+× 100</code></pre>
+
+    <p>
+      An initial inspection showed that thresholds of 20% and 30% decline did
+      not separate the sample because every row satisfied those thresholds.
+      A 50% decline threshold produced two usable classes and was therefore
+      selected for the capstone target.
+    </p>
+
+    <pre><code>target_severe_decline =
+    impression_change_pct &lt;= -50%</code></pre>
+
+    <div class="warning">
+      The 50% threshold is a modeling decision for this supplied example lane.
+      It is not presented as a universal definition of content decline.
+    </div>
+
+    <h3>Public-safety exclusions</h3>
+
+    <p>
+      The public paper does not expose client identifiers, content identifiers,
+      keyword identifiers, URLs, private queries, credentials, or raw client
+      exports.
+    </p>
+
+    <p>
+      The dataset also contained a number of precomputed decision fields.
+      These were excluded from the predictive feature set because they could
+      encode the target directly or introduce evaluation leakage.
+    </p>
+  </section>
+
+
+  <!-- 3. METHODOLOGY -->
+
+  <section id="methodology">
+    <h2>3. Methodology</h2>
+
+    <h3>Feature design</h3>
+
+    <p>
+      The model uses signals that can be interpreted as historical page or
+      search-performance characteristics rather than using the forward
+      outcome-window metrics themselves.
+    </p>
+
+    <p>
+      Feature groups include:
+    </p>
+
+    <div>
+      <span class="tag">Keyword structure</span>
+      <span class="tag">URL structure</span>
+      <span class="tag">Title structure</span>
+      <span class="tag">Content age</span>
+      <span class="tag">Previous impressions</span>
+      <span class="tag">Previous clicks</span>
+      <span class="tag">Previous sessions</span>
+      <span class="tag">Historical CTR</span>
+      <span class="tag">Historical session rate</span>
+      <span class="tag">Content type</span>
+      <span class="tag">Analytics availability</span>
+    </div>
+
+    <h3>Derived historical features</h3>
+
+    <p>
+      Several rate-based features were derived from the previous observation
+      window:
+    </p>
+
+    <ul>
+      <li>Previous-window CTR</li>
+      <li>Previous-window session rate</li>
+      <li>Previous-window click rate</li>
+      <li>Log-transformed historical volume features</li>
+    </ul>
+
+    <h3>Leakage controls</h3>
+
+    <p>
+      The following types of fields were excluded:
+    </p>
+
+    <ul>
+      <li>The directly provided <code>is_declining</code> flag.</li>
+      <li>Precomputed recommendation or health flags.</li>
+      <li>Outcome-window impressions, clicks, and sessions.</li>
+      <li>
+        Other 90-day aggregate performance variables whose temporal composition
+        could not be established safely from the supplied example cut.
+      </li>
+      <li>
+        Fields that could encode the target through post-outcome or
+        precomputed decision logic.
+      </li>
+    </ul>
+
+    <h3>Models</h3>
+
+    <table>
+      <tr>
+        <th>Model</th>
+        <th>Purpose</th>
+      </tr>
+
+      <tr>
+        <td>Rule-based baseline</td>
+        <td>
+          Establishes a simple ranking using inverse percentile ranks of
+          previous impressions, clicks, and sessions.
+        </td>
+      </tr>
+
+      <tr>
+        <td>Logistic Regression</td>
+        <td>
+          Provides an interpretable linear probability model with balanced
+          class weighting.
+        </td>
+      </tr>
+
+      <tr>
+        <td>Histogram Gradient Boosting</td>
+        <td>
+          Tests whether nonlinear feature interactions improve ranking quality
+          over the simple baseline.
+        </td>
+      </tr>
+    </table>
+
+    <h3>Validation design</h3>
+
+    <p>
+      Because the supplied example data does not expose a usable calendar date
+      for every row, a chronological train/test split could not be justified.
+      Instead, the analysis uses an 80/20 stratified random split with a fixed
+      seed of 42.
+    </p>
+
+    <p>
+      The same validation set is used for the rule-based baseline and both
+      machine learning models so that the comparison is made under identical
+      evaluation conditions.
+    </p>
+
+    <h3>Evaluation metrics</h3>
+
+    <ul>
+      <li><strong>ROC-AUC:</strong> overall ranking discrimination.</li>
+      <li>
+        <strong>Average Precision:</strong> precision-recall performance,
+        particularly useful when evaluating a positive opportunity class.
+      </li>
+      <li>
+        <strong>Precision@10%:</strong> how concentrated severe-decline cases
+        are among the highest-ranked 10% of pages.
+      </li>
+      <li>
+        <strong>Recall@10%:</strong> the proportion of severe-decline cases
+        captured by the highest-ranked 10%.
+      </li>
+    </ul>
+  </section>
+
+
+  <!-- 4. RESULTS -->
+
+  <section id="results">
+    <h2>4. Results</h2>
+
+    <p>
+      The model comparison should be interpreted as a ranking experiment:
+      whether historical signals can concentrate pages associated with severe
+      decline near the top of the review queue.
+    </p>
+
+    <table>
+      <tr>
+        <th>Model</th>
+        <th>ROC-AUC</th>
+        <th>Average Precision</th>
+        <th>Precision@10%</th>
+        <th>Recall@10%</th>
+      </tr>
+
+      <tr>
+        <td>Rule-based baseline</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+      </tr>
+
+      <tr>
+        <td>Logistic Regression</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+      </tr>
+
+      <tr>
+        <td>Histogram Gradient Boosting</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+        <td>[INSERT]</td>
+      </tr>
+    </table>
+
+    <div class="chart-placeholder">
+      <strong>Model vs Baseline Chart</strong>
+      <br><br>
+      Insert the exported validation comparison chart from the capstone
+      notebook here if you want the deployed paper to display the visualization.
+    </div>
+
+    <h3>Interpretation</h3>
+
+    <p>
+      The preferred model is selected using Average Precision because the
+      practical objective is not simply to classify every page correctly. The
+      operational objective is to rank a limited review queue so that pages
+      associated with severe decline are concentrated near the top.
+    </p>
+
+    <p>
+      Based on the notebook's final validation output, the strongest model was:
+      <strong>[INSERT BEST MODEL]</strong>.
+    </p>
+
+    <p>
+      Its Average Precision was
+      <strong>[INSERT AP]</strong>,
+      compared with
+      <strong>[INSERT BASELINE AP]</strong>
+      for the rule-based baseline.
+    </p>
+
+    <div class="success">
+      <strong>Result framing:</strong>
+      The model is useful only to the extent that it improves prioritization
+      over a simple historical-signal baseline on the same held-out validation
+      set. The experiment does not establish causality.
+    </div>
+
+    <h3>Feature importance</h3>
+
+    <p>
+      The final notebook also produces a feature-importance artifact for the
+      selected nonlinear model. The most influential features should be
+      reported as associations within this modeling sample, not as causal
+      explanations of why search performance changes.
+    </p>
+
+    <table>
+      <tr>
+        <th>Rank</th>
+        <th>Feature</th>
+        <th>Importance</th>
+      </tr>
+
+      <tr>
+        <td>1</td>
+        <td>[INSERT FEATURE]</td>
+        <td>[INSERT VALUE]</td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+        <td>[INSERT FEATURE]</td>
+        <td>[INSERT VALUE]</td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+        <td>[INSERT FEATURE]</td>
+        <td>[INSERT VALUE]</td>
+      </tr>
+
+      <tr>
+        <td>4</td>
+        <td>[INSERT FEATURE]</td>
+        <td>[INSERT VALUE]</td>
+      </tr>
+
+      <tr>
+        <td>5</td>
+        <td>[INSERT FEATURE]</td>
+        <td>[INSERT VALUE]</td>
+      </tr>
+    </table>
+  </section>
+
+
+  <!-- 5. LIMITATIONS -->
+
+  <section id="limitations">
+    <h2>5. Limitations &amp; Honest Framing</h2>
+
+    <h3>Observed</h3>
+
+    <ul>
+      <li>
+        The supplied example lane contains 56,253 rows and provides two
+        exposed 30-day impression windows.
+      </li>
+
+      <li>
+        A 50% or greater impression decrease provides a usable binary target
+        for this experiment.
+      </li>
+
+      <li>
+        The selected models can be evaluated consistently against a common
+        held-out validation split.
+      </li>
+    </ul>
+
+    <h3>Directional</h3>
+
+    <ul>
+      <li>
+        Historical page and search-performance characteristics can be used to
+        rank pages by their association with the severe-decline target.
+      </li>
+
+      <li>
+        A machine learning model can potentially improve review prioritization
+        over a simple rule-based ranking.
+      </li>
+    </ul>
+
+    <h3>Not established</h3>
+
+    <ul>
+      <li>
+        The model does not prove that any feature causes traffic or ranking
+        decline.
+      </li>
+
+      <li>
+        The model does not prove or reproduce a search engine's ranking
+        algorithm.
+      </li>
+
+      <li>
+        The model does not prove that a content refresh will recover traffic.
+      </li>
+
+      <li>
+        The analysis does not establish generalization to unseen clients,
+        industries, search engines, or future calendar periods.
+      </li>
+
+      <li>
+        Because usable calendar dates were not exposed for the supplied rows,
+        the validation design cannot establish true future-time generalization.
+      </li>
+    </ul>
+
+    <div class="warning">
+      <strong>Important:</strong>
+      This should be used as a decision-support ranking system for human review,
+      not as an autonomous content-change or search-ranking system.
+    </div>
+  </section>
+
+
+  <!-- 6. RECOMMENDATIONS -->
+
+  <section id="recommendations">
+    <h2>6. Ranked Recommendations</h2>
+
+    <p>
+      The final scoring pipeline converts model probabilities into a practical
+      review queue. The public artifact intentionally avoids exposing raw
+      identifiers, URLs, keywords, or client-specific information.
+    </p>
+
+    <h3>Priority policy</h3>
+
+    <table>
+      <tr>
+        <th>Priority</th>
+        <th>Score rule</th>
+        <th>Recommended action</th>
+      </tr>
+
+      <tr>
+        <td>High</td>
+        <td>Top 10% of model scores</td>
+        <td>
+          Prioritize human content/search review.
+        </td>
+      </tr>
+
+      <tr>
+        <td>Medium</td>
+        <td>70th–90th percentile</td>
+        <td>
+          Review if capacity allows.
+        </td>
+      </tr>
+
+      <tr>
+        <td>Monitor</td>
+        <td>Below 70th percentile</td>
+        <td>
+          Continue monitoring performance.
+        </td>
+      </tr>
+    </table>
+
+    <h3>Reason codes</h3>
+
+    <ul>
+      <li>
+        <strong>LOW_HISTORICAL_VISIBILITY</strong> —
+        historically low previous-window impressions.
+      </li>
+
+      <li>
+        <strong>LOW_HISTORICAL_CTR</strong> —
+        historically low previous-window click-through rate.
+      </li>
+
+      <li>
+        <strong>LOW_HISTORICAL_ENGAGEMENT</strong> —
+        historically low previous-window session activity.
+      </li>
+
+      <li>
+        <strong>RELATIVELY_NEW_CONTENT</strong> —
+        relatively low content age within this sample.
+      </li>
+
+      <li>
+        <strong>MODEL_RISK_SIGNAL</strong> —
+        elevated model score without one of the simpler rule-based reason
+        codes dominating.
+      </li>
+    </ul>
+
+    <h3>Example public-safe recommendation format</h3>
+
+    <table>
+      <tr>
+        <th>Rank</th>
+        <th>Predicted probability</th>
+        <th>Priority</th>
+        <th>Reason</th>
+        <th>Recommended action</th>
+      </tr>
+
+      <tr>
+        <td>1</td>
+        <td>[INSERT]</td>
+        <td>High</td>
+        <td>[INSERT REASON CODE]</td>
+        <td>Prioritize human content/search review</td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+        <td>[INSERT]</td>
+        <td>High</td>
+        <td>[INSERT REASON CODE]</td>
+        <td>Prioritize human content/search review</td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+        <td>[INSERT]</td>
+        <td>High</td>
+        <td>[INSERT REASON CODE]</td>
+        <td>Prioritize human content/search review</td>
+      </tr>
+
+      <tr>
+        <td>4</td>
+        <td>[INSERT]</td>
+        <td>High</td>
+        <td>[INSERT REASON CODE]</td>
+        <td>Prioritize human content/search review</td>
+      </tr>
+
+      <tr>
+        <td>5</td>
+        <td>[INSERT]</td>
+        <td>High</td>
+        <td>[INSERT REASON CODE]</td>
+        <td>Prioritize human content/search review</td>
+      </tr>
+    </table>
+
+    <p>
+      The complete top-10 public-safe recommendation artifact is generated by
+      the capstone notebook and stored in the repository outputs.
+    </p>
+
+    <h3>Action playbook</h3>
+
+    <ol>
+      <li>
+        Start with pages receiving a High priority score.
+      </li>
+
+      <li>
+        Inspect the associated historical signals and reason codes.
+      </li>
+
+      <li>
+        Compare the page's search intent, content quality, freshness,
+        relevance, and technical state manually.
+      </li>
+
+      <li>
+        Determine whether an actual content or technical intervention is
+        justified.
+      </li>
+
+      <li>
+        Record the review decision separately from the model score.
+      </li>
+
+      <li>
+        Re-evaluate the ranking system on future released data before treating
+        the scoring system as operationally stable.
+      </li>
+    </ol>
+  </section>
+
+
+  <!-- 7. REPRODUCIBILITY -->
+
+  <section id="reproducibility">
+    <h2>7. Reproducibility</h2>
+
+    <p>
+      The analysis is implemented as a notebook-based workflow and can be
+      reproduced from the project repository.
+    </p>
+
+    <h3>Repository</h3>
+
+    <p>
+      <a
+        href="https://github.com/Plabon-Basak/FlyRank_AI"
+        target="_blank"
+        rel="noopener"
+      >
+        GitHub repository: Plabon-Basak/FlyRank_AI
+      </a>
+    </p>
+
+    <h3>Notebook</h3>
+
+    <p>
+      <a
+        href="https://colab.research.google.com/github/Plabon-Basak/FlyRank_AI/blob/main/work/notebooks/capstone.ipynb"
+        target="_blank"
+        rel="noopener"
+      >
+        Open the capstone notebook in Google Colab
+      </a>
+    </p>
+
+    <h3>Pipeline</h3>
+
+    <ol>
+      <li>Load the decline/recovery example lane.</li>
+      <li>Inspect available fields and temporal structure.</li>
+      <li>Construct the severe-decline target.</li>
+      <li>Remove leakage-risk and outcome-window features.</li>
+      <li>Engineer historical rate and log features.</li>
+      <li>Create the stratified train/validation split.</li>
+      <li>Fit the rule-based baseline.</li>
+      <li>Fit Logistic Regression.</li>
+      <li>Fit Histogram Gradient Boosting.</li>
+      <li>Evaluate all methods on the same validation set.</li>
+      <li>Select the strongest model using Average Precision.</li>
+      <li>Generate ranked opportunity scores.</li>
+      <li>Generate public-safe reason codes and recommendations.</li>
+      <li>Export model results and recommendation artifacts.</li>
+    </ol>
+
+    <h3>Generated artifacts</h3>
+
+    <ul>
+      <li><code>capstone_outputs/model_results.csv</code></li>
+      <li><code>capstone_outputs/top10_recommendations.csv</code></li>
+      <li><code>capstone_outputs/feature_importance_top20.csv</code></li>
+      <li>Model-vs-baseline validation chart</li>
+      <li>Score-distribution chart</li>
+      <li>Top-ranking visualization</li>
+    </ul>
+
+    <div class="note">
+      The public paper is intentionally separated from sensitive raw data.
+      Reproduction requires the authorized internship dataset environment and
+      appropriate access permissions.
+    </div>
+  </section>
+
+
+  <!-- 8. ACKNOWLEDGMENTS -->
+
+  <section id="acknowledgments">
+    <h2>8. Acknowledgments &amp; Data Credit</h2>
+
+    <p>
+      This project was completed as part of the FlyRank Machine Learning
+      Internship capstone.
+    </p>
+
+    <p>
+      <strong>
+        Built on the FlyRank ML Internship dataset.
+      </strong>
+    </p>
+
+    <p>
+      <a
+        href="https://flyrank.ai"
+        target="_blank"
+        rel="noopener"
+      >
+        FlyRank
+      </a>
+    </p>
+
+    <p>
+      The analysis is intended as an educational and research-oriented
+      decision-support exercise. Public results are presented without client
+      names, private domains, private queries, credentials, raw exports, or
+      other confidential identifiers.
+    </p>
+  </section>
+
+
+  <!-- 9. CONCLUSION -->
+
+  <section>
+    <h2>9. Conclusion</h2>
+
+    <p>
+      This capstone demonstrates a practical machine learning workflow for
+      turning historical search-performance signals into a ranked content
+      review queue. The central contribution is not an automated claim about
+      search-engine behavior, but a repeatable framework for comparing a
+      simple baseline against machine learning models under a common validation
+      setup.
+    </p>
+
+    <p>
+      Within the supplied decline/recovery example lane, the final system
+      produces a probability-based opportunity score, priority level, reason
+      codes, and human review action. The result can therefore support a
+      reviewer in deciding where to investigate first while keeping the final
+      content decision with a human.
+    </p>
+
+    <p>
+      Future work should evaluate the system on genuinely time-separated
+      releases, test generalization across independent datasets, calibrate
+      probabilities, and measure whether model-assisted review actually
+      improves downstream decision quality.
+    </p>
+  </section>
+
+
+  <!-- 10. ML-12 CLOSING CELLS -->
+
+  <section>
+    <h2>10. ML-12 Closing Deliverables</h2>
+
+    <h3>5-minute demo outline</h3>
+
+    <ol>
+      <li>
+        <strong>Problem — 45 seconds:</strong>
+        Explain why a content reviewer needs a ranked investigation queue.
+      </li>
+
+      <li>
+        <strong>Data — 45 seconds:</strong>
+        Explain the decline/recovery example lane and the two exposed
+        30-day impression windows.
+      </li>
+
+      <li>
+        <strong>Method — 90 seconds:</strong>
+        Explain the 50% severe-decline target, leakage exclusions, baseline,
+        Logistic Regression, and Gradient Boosting.
+      </li>
+
+      <li>
+        <strong>Results — 90 seconds:</strong>
+        Show the common validation metrics and explain which model performed
+        best relative to the baseline.
+      </li>
+
+      <li>
+        <strong>Recommendation — 30 seconds:</strong>
+        Show how the model score becomes High, Medium, or Monitor priority.
+      </li>
+
+      <li>
+        <strong>Limitations — 30 seconds:</strong>
+        State clearly that this is directional decision support rather than
+        causal prediction.
+      </li>
+    </ol>
+
+    <h3>Social-post cut</h3>
+
+    <div class="note">
+      <p>
+        Completed my FlyRank ML Week 8 capstone on
+        <strong>Decline and Recovery Opportunity Ranking</strong>.
+      </p>
+
+      <p>
+        I built a decision-support pipeline that uses historical
+        search-performance signals to rank pages for human investigation,
+        compared a rule-based baseline with machine learning models, and
+        evaluated them on a common validation split.
+      </p>
+
+      <p>
+        The key lesson was not simply choosing a stronger model, but designing
+        the target carefully, controlling leakage, validating honestly, and
+        turning predictions into an actionable review queue.
+      </p>
+    </div>
+
+    <h3>Employer-facing summary</h3>
+
+    <p>
+      I built a machine learning decision-support system that ranks content
+      pages for investigation based on historical search-performance signals.
+      I compared machine learning models against a rule-based baseline using
+      ranking-oriented validation metrics while explicitly controlling for
+      leakage and public-data constraints. The resulting pipeline converts
+      model scores into prioritized human-review recommendations rather than
+      making unsupported causal claims.
+    </p>
+  </section>
+
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>
+      <strong>FlyRank ML Internship — Week 8 Capstone</strong>
+    </p>
+
+    <p>
+      Decline and Recovery Opportunity Ranking ·
+      Machine Learning Decision Support
+    </p>
+
+    <p>
+      Built by Plabon Basak.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
+```
